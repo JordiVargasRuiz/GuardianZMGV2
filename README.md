@@ -12,6 +12,8 @@ Este workflow transforma una consulta de usuario en Telegram en un reporte estru
 4. Devuelve un mensaje de Telegram con datos relevantes y un botón de acceso directo.
 
 El diseño enfatiza claridad, fiabilidad y contenido accionable para usuarios que necesitan movilidad dentro de Guadalajara, Zapopan, Tlaquepaque y Tonalá.
+<img width="1919" height="863" alt="image" src="https://github.com/user-attachments/assets/4bb25b2f-fa6a-44ff-9653-afbf833de03b" />
+
 
 ## Qué hace cada módulo
 
@@ -69,7 +71,8 @@ El diseño enfatiza claridad, fiabilidad y contenido accionable para usuarios qu
 - Envía la respuesta al chat de Telegram.
 - Configura `parse_mode=Markdown` y un teclado inline con URL de rutas.
 - Entrega al usuario la salida final del workflow.
-![Uploading image.png…]()
+<img width="1872" height="812" alt="image" src="https://github.com/user-attachments/assets/9cf02f4f-bd40-4dc8-a835-5cfba1bdcd56" />
+
 
 
 ## Cómo usar el flujo
@@ -100,6 +103,8 @@ Envía un mensaje de ejemplo en Telegram, por ejemplo:
 
 - `De Miramar al CUCEI`
 - `Ruta desde Plaza del Sol hacia Glorieta Minerva`
+<img width="1919" height="912" alt="image" src="https://github.com/user-attachments/assets/fe67fc8c-fd08-4f7b-a497-aa5a240e8d40" />
+
 
 El flujo generará una respuesta con:
 
@@ -109,6 +114,8 @@ El flujo generará una respuesta con:
 - pasos detallados de la ruta
 - disponibilidad de MiBici
 - condiciones climáticas
+<img width="1919" height="854" alt="image" src="https://github.com/user-attachments/assets/63631e07-356f-4051-8e67-1f2ae5557c81" />
+
 
 ## Requerimientos técnicos
 

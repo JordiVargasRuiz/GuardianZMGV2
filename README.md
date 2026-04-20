@@ -20,12 +20,16 @@ El diseño enfatiza claridad, fiabilidad y contenido accionable para usuarios qu
 - Recibe mensajes entrantes desde Telegram.
 - Extrae `chat.id` y texto del usuario.
 - Inicia el flujo en n8n cuando el usuario escribe al bot.
+<img width="1871" height="795" alt="image" src="https://github.com/user-attachments/assets/940a27a0-3575-4798-8ccb-3be0d7a3bb2e" />
+
 
 ### `Basic LLM Chain`
 
 - Clasifica la intención del mensaje como `RUTA` o `CHARLA`.
 - Evita procesar solicitudes que no sean de movilidad.
 - Mejora la precisión del bot al enrutar solo las consultas relevantes al agente de ruta.
+<img width="1869" height="796" alt="image" src="https://github.com/user-attachments/assets/4527cf98-17c0-4346-9d4a-da2ad5cf60a1" />
+
 
 ### `AI Agent`
 
@@ -33,44 +37,40 @@ El diseño enfatiza claridad, fiabilidad y contenido accionable para usuarios qu
 - Envía consultas a herramientas externas y procesa resultados.
 - Genera la respuesta final en formato de texto profesional.
 - Preserva lógica de negocio como: cálculo de costo, evaluación de coincidencias y estructura de reporte.
+<img width="1869" height="794" alt="image" src="https://github.com/user-attachments/assets/529bf5e1-f714-408e-84b3-13132ecddc3b" />
+
 
 ### `HTTP Request` (Google Maps Directions)
 
 - Consulta la API de Directions con `mode=transit`.
 - Devuelve rutas detalladas de transporte público.
 - Utiliza parámetros como `language=es`, `region=mx` y `transit_routing_preferences=less_walking`.
+<img width="1870" height="813" alt="image" src="https://github.com/user-attachments/assets/a381e56a-aa55-4718-8eea-c96e91ed86a0" />
+
 
 ### `obtener_clima`
 
 - Obtiene el clima actual de `Guadalajara,MX`.
 - Añade contexto meteorológico al reporte final.
 - Permite informar sobre condiciones que pueden afectar la movilidad.
+<img width="1870" height="814" alt="image" src="https://github.com/user-attachments/assets/8bd9f54f-9265-4f38-844e-c7a7b2038930" />
+
 
 ### `MiBici` / `Info_MiBici`
 
 - Consulta el estado de la flota y las estaciones de bicicletas públicas.
 - Ofrece información de movilidad intermodal al usuario.
 - Permite complementar rutas con opciones de bicicleta cuando aplique.
+<img width="1872" height="812" alt="image" src="https://github.com/user-attachments/assets/ae464da0-c63b-49b7-97de-eac727559551" />
 
-### `Analizador_vial`
-
-- Procesa la ruta de Google Maps y el contenido de un RSS de tráfico local.
-- Extrae nombres de calles relevantes de las instrucciones de ruta.
-- Identifica coincidencias entre la ruta y los incidentes reportados.
-- Clasifica el impacto como `ALTO`, `MODERADO` o `NULO`.
-- Genera el campo `veredictoPersonalizado` usado en el reporte.
-
-### `calculadora_tarifas`
-
-- Calcula el costo total del viaje en base a `11.00 MXN` por unidad de transporte.
-- Aplica la regla de negocio: si hay una unidad, el costo es exactamente `11.00 MXN`.
-- Devuelve precio, moneda y detalle del cálculo.
 
 ### `Send a text message`
 
 - Envía la respuesta al chat de Telegram.
 - Configura `parse_mode=Markdown` y un teclado inline con URL de rutas.
 - Entrega al usuario la salida final del workflow.
+![Uploading image.png…]()
+
 
 ## Cómo usar el flujo
 
@@ -88,7 +88,6 @@ Configura los siguientes servicios en n8n antes de ejecutar el flujo:
 - OpenWeatherMap
 - Google Maps Directions API
 
-> Nota: en el archivo exportado hay claves y credenciales de ejemplo que deben ser reemplazadas por tus propias cuentas. Nunca publiques estas credenciales.
 
 ### 3. Validación de webhook
 

@@ -1,0 +1,585 @@
+{
+  "name": "GuardianZMG",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "={{ $node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"] }}",
+        "text": "={{ $json.output }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🚌 Rutas Moovitapp",
+                    "additionalFields": {
+                      "url": "https://moovitapp.com/index/es-419/transporte_p%C3%BAblico-lines-Guadalajara-2900-1036715"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": true,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        704,
+        -80
+      ],
+      "id": "99dc1820-6d97-46d3-b849-090d387373fe",
+      "name": "Send a text message",
+      "webhookId": "f720b2eb-c281-4f68-9845-433d6f46dfb2",
+      "credentials": {
+        "telegramApi": {
+          "id": "zZ2fGRpROAe1IA78",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-flash-lite-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        256
+      ],
+      "id": "54f3977b-c7e7-4611-b95e-b67eafff36ca",
+      "name": "Google Gemini Chat Model",
+      "retryOnFail": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sqzPsn1AfF6eLGZl",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "options": {
+          "systemMessage": "=# ROLE\n\nEres el \"Asistente de Movilidad Inteligente ZMG\", un ingeniero experto en sistemas de transporte y logística urbana para Guadalajara, Zapopan, Tlaquepaque y Tonalá. 🤖🚍\n\n\n\n# PROTOCOLO DE EJECUCIÓN (PASOS OBLIGATORIOS):\n\n\n\n1. MOTOR DE GEOCODIFICACIÓN (SISTÉMICO):\n\nA. REGLA DE FIDELIDAD NOMINAL: Prohibido sustituir nombres. Respeta el nombre literal del usuario.\n\nB. ALGORITMO DE NORMALIZACIÓN (QUERY DE BÚSQUEDA):\n\nPrepara la dirección para el HTTP Request de Google Maps:\n\n- ALIAS: \"CUCEI\" = \"Blvd. Gral. Marcelino García Barragán 1421, Jal\"; \"CUCEA\" = \"CUCEA, Periférico Norte 799, Núcleo Universitario Belenes, 45100 Zapopan, Jal.\"; \"Costa Brava\" = \"Puerto Costa Brava, Miramar, Zapopan, Jal\".\n\n- GENERAL: Concatena [Nombre literal del usuario] + \", \" + [Colonia/Municipio] + [Código postal]+\", Jal, México\". \n\n\n\n2. LLAMADA SÍNCRONA Y EXTRACCIÓN DE DATOS (CRÍTICO):\n\n- Ejecuta primero Google Maps (mode=transit) y el RSS \"TraficoZMG\". \n\n- DEPENDENCIA: Una vez obtenidos los datos, ejecuta \"Analizador_vial\" enviándole la ruta y el RSS.\n\n- REGLA DE ORO: Extrae el campo \"formatted_address\" del JSON de respuesta de Maps. USA ESA DIRECCIÓN COMPLETA PARA EL REPORTE. PROHIBIDO usar nombres cortos como \"Costa Brava\" o \"CUCEA\" en la sección de Ruta.\n\n\n\n3. CÁLCULO DE COSTO LOGÍSTICO (TOOL CALCULADORA):\n\n- Cuenta las unidades de transporte (Bus, Tren, Macro). \n\n- Llama a \"calculadora_tarifas\". Tarifa oficial $11.00 MXN. Si solo hay 1 camión, el costo debe ser $11.00 obligatoriamente.\n\n\n\n4. SELECCIÓN HEURÍSTICA Y REGLA DE INTEGRIDAD:\n\n- Sigue fielmente la ruta del JSON. No omitas pasos ni resumas transbordos; enlista cada segmento del trayecto de forma individual.\n\n\n\n5. VALIDACIÓN DE SALIDA (FORMATO PROFESIONAL):\n\n- Usa SIEMPRE la dirección completa (Calle, Colonia, CP) obtenida de Google Maps para el reporte final.\n\n\n\n6. USO ESTRICTO DE ANALIZADOR_VIAL (CRÍTICO):\n\n- Usa estrictamente los resultados de la herramienta \"Analizador_vial\".\n\n\n\nREGLAS OBLIGATORIAS:\n\n\n\n1. PROHIBIDO GENERALIZAR:\n\n   🚫 No usar frases como:\n\n   \"en la ZMG\"\n\n   \"en avenidas principales\"\n\n   \"en la ciudad\"\n\n\n\n2. USO DE COINCIDENCIAS:\n\n   - Si coincidencias.length > 0:\n\n     ✔ SOLO mencionar esas calles exactas\n\n     ✔ Ejemplo:\n\n     \"Afectación en: López Mateos, Mariano Otero\"\n\n\n\n   - Si coincidencias.length == 0:\n\n     ✔ Responder obligatoriamente:\n\n     \"Sin afectación directa en la ruta\"\n\n\n\n3. IMPACTO REAL:\n\n   - impacto = ALTO → \"Impacto Alto\"\n\n   - impacto = MODERADO → \"Impacto Moderado\"\n\n   - impacto = NULO → \"Sin impacto\"\n\n\n\n4. VEREDICTO:\n\n   - USAR exactamente \"veredictoPersonalizado\"\n\n   - 🚫 NO reescribirlo\n\n   - 🚫 NO ampliarlo\n\n   - 🚫 NO agregar contexto extra\n\n\n\n5. TIEMPO:\n\n   - SOLO agregar retraso si impacto ≠ NULO\n\n   - Si impacto = NULO → NO mencionar tráfico\n\n\n\n6. ANÁLISIS DEL INGENIERO:\n\n   - Basado SOLO en coincidencias reales\n\n   - Si no hay coincidencias → indicar que la ruta no cruza zonas afectadas\n\n\n\n7. VALIDACIÓN OBLIGATORIA DE COINCIDENCIAS:\n\n   - Si coincidencias.length == 0:\n\n     🚫 PROHIBIDO mencionar nombres de calles\n\n     🚫 PROHIBIDO inferir tráfico\n\n     🚫 PROHIBIDO ampliar el contexto\n\n     ✔ SOLO permitido:\n\n     \"Sin afectación directa en la ruta\"\n\n\n\n# REGLAS DE FORMATO (ESTRICTO - TEXTO PLANO):\n\n- PROHIBIDO usar asteriscos (*), guiones bajos (_) o etiquetas HTML. \n\n- Usa el separador --- para dividir las secciones.\n\n- REGLA DE SINTESIS: Sé directo, pero completo en el desglose de pasos.\n\n\n\n# ESTRUCTURA DEL REPORTE:\n\n\n\n🚨 ESTADO DE LA RUTA: [Impacto reportado por Analizador_vial]\n\n👉 [Inserta aquí el veredictoPersonalizado generado por Analizador_vial].\n\n\n\n---\n\n\n\n📱 REPORTE DE MOVILIDAD INTERACTIVO\n\n\n\n🏁 Ruta: [formatted_address_origen de Google Maps] a [formatted_address_destino de Google Maps]\n\n⏱️ Tiempo estimado: [Tiempo de la API] [Si Analizador_vial indica impacto, añade aviso de retraso]\n\n💰 Costo total del trayecto: [Resultado de calculadora_tarifas] MXN\n\n\n\n---\n\n\n\n👣 RUTA PASO A PASO:\n\n[Enumera todos los pasos del JSON de Maps: Paso 1, Paso 2, Paso 3, etc. Detalla cada unidad de transporte y punto de transbordo exacto].\n\n\n\n---\n\n\n\n🚲 MOVILIDAD INTERMODAL:\n\n[Disponibilidad resumida de MiBici].\n\n\n\n---\n\n\n\n🛡️ SEGURIDAD:\n\n[Alerta concisa según zona u horario].\n\n\n\n---\n\n\n\n👨‍💻 Análisis del Ingeniero:\n\n[Justificación técnica basada en la cantidad de coincidencias detectadas por la herramienta Analizador_vial].\n\n\n\n---\n\n\n\n☁️ Condiciones: [Temp] grados Celsius | [Cielo].\n\n\n\n---\n\n\n\n🛰️ RutaCali: [formatted_address_origen de Maps] | [formatted_address_destino de Maps]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        112,
+        16
+      ],
+      "id": "7291297f-686f-4766-a394-f21b2c7b62ba",
+      "name": "AI Agent",
+      "retryOnFail": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -656,
+        16
+      ],
+      "id": "00486601-21b1-4bc2-9204-de6ae579a001",
+      "name": "Telegram Trigger",
+      "webhookId": "e50dcba9-c3aa-4e99-ad1b-bca9e4a1f710",
+      "credentials": {
+        "telegramApi": {
+          "id": "zZ2fGRpROAe1IA78",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "cityName": "Guadalajara,MX",
+        "language": "es"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        752,
+        288
+      ],
+      "id": "5725d319-077f-4607-bd6e-1e3cef76f2ee",
+      "name": "obtener_clima",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "9GZhrlugbRegwfMK",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Calcula rutas de transporte público en Guadalajara. REQUIERE que me envíes DOS parámetros: \"origin\" (el punto de partida) y \"destination\" (el punto de llegada). NO inventes URLs ni modifiques otros parámetros.",
+        "url": "https://maps.googleapis.com/maps/api/directions/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "origin",
+              "value": "={{ $json.origin }}"
+            },
+            {
+              "name": "destination",
+              "value": "={{ $json.destination }}"
+            },
+            {
+              "name": "mode",
+              "value": "transit"
+            },
+            {
+              "name": "language",
+              "value": "es"
+            },
+            {
+              "name": "region",
+              "value": "mx"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyCN8dEiV67WOFWhIIx9B7SKK3wIoBcedHg"
+            },
+            {
+              "name": "alternatives",
+              "value": "true"
+            },
+            {
+              "name": "transit_routing_preferences",
+              "value": "less_walking"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        240,
+        288
+      ],
+      "id": "fcbb5c90-6a3c-435c-a0b7-d4f13bf7e7b4",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "description": "Calcula el costo total del viaje en transporte público de la ZMG. Recibe como entrada el número total de unidades (autobuses o trenes) a abordar.\nREGLA A SEGUIR: NO INVENTES COSTOS, si el número de unidades es 1, entonces son 11.00, si son 2 unidades entonces 22.00, multiplica el número de unidades por 11.00.\n",
+        "jsCode": "// Recibimos el número de unidades desde el Agente\nconst unidades = $input.first().json.unidades || 1; \n\n// ACTUALIZACIÓN DE TARIFA VIGENTE ZMG 2026\nconst tarifaOficial = 11.00; \n\nconst total = unidades * tarifaOficial;\n\nreturn {\n  costo_total: total.toFixed(2),\n  moneda: \"MXN\",\n  detalle: `Tarifa actualizada: ${unidades} unidad(es) a $11.00 c/u`\n};"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        624,
+        288
+      ],
+      "id": "4e99796c-d9cb-4345-a968-a5b67871a70b",
+      "name": "calculadora_tarifas"
+    },
+    {
+      "parameters": {
+        "url": "https://rss.app/feeds/BW3jhALdBbiwLO7F.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedReadTool",
+      "typeVersion": 1.2,
+      "position": [
+        864,
+        288
+      ],
+      "id": "09ee7cab-a319-4990-8c7b-27124919122d",
+      "name": "TraficoZMG"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analiza el siguiente mensaje enviado por el usuario en Telegram: \"{{ $json.message.text }}\".\n\nTu única misión es clasificar la intención en una de estas dos palabras exactas:\n- RUTA: Si el usuario pide ir de un lugar a otro o menciona origen y destino.\n- CHARLA: Si es un saludo, una palabra suelta, una queja o texto sin sentido.\n\nIMPORTANTE: Responde ÚNICAMENTE con la palabra RUTA o CHARLA. No añadidas puntos, ni explicaciones.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -464,
+        16
+      ],
+      "id": "b1e1536c-96de-4367-a955-9f851b7994f6",
+      "name": "Basic LLM Chain",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cc2fc0ff-13d1-4185-ac52-8d72387a0687",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "RUTA",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        16
+      ],
+      "id": "2fb2b338-00e3-4542-8b56-063b45315ca5",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"] }}",
+        "text": "\"¡Hola, Compañero de viajes! 👋 Soy tu Asistente de Movilidad. Para ayudarte con tu ruta y el costo de $11.00, por favor dime de dónde a dónde vas (Ej: 'De Miramar al CUCEI').\"",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -176,
+        432
+      ],
+      "id": "fa580096-fbc8-4c8a-be87-23090caf583e",
+      "name": "Send a text message1",
+      "webhookId": "8e42c577-3b72-4701-b087-569dda67ff0f",
+      "credentials": {
+        "telegramApi": {
+          "id": "zZ2fGRpROAe1IA78",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://guadalajara.publicbikesystem.net/ube/gbfs/v1/es/station_status.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        368,
+        288
+      ],
+      "id": "daf07ec8-d2a9-4f5f-b853-e0785055a95f",
+      "name": "MiBici"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===============================\n// 1. LIMPIEZA DE TEXTO\n// ===============================\nfunction limpiar(texto) {\n    return texto\n        .toLowerCase()\n        .normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\")\n        .replace(/[^a-z0-9\\s]/g, \"\")\n        .trim();\n}\n\n// ===============================\n// 2. EXTRAER CALLES (BIGRAMAS REALES)\n// ===============================\nfunction extraerCalles(texto) {\n    const palabras = texto.split(\" \");\n    const calles = [];\n\n    const stopWords = [\n        \"avenida\", \"calle\", \"av\", \"de\", \"la\", \"el\", \"y\", \"en\",\n        \"parada\", \"ruta\", \"hacia\", \"desde\", \"hasta\", \"por\",\n        \"autobus\", \"camion\", \"tren\"\n    ];\n\n    for (let i = 0; i < palabras.length - 1; i++) {\n        const p1 = palabras[i];\n        const p2 = palabras[i + 1];\n\n        if (\n            p1.length > 4 &&\n            p2.length > 4 &&\n            !stopWords.includes(p1) &&\n            !stopWords.includes(p2)\n        ) {\n            calles.push(p1 + \" \" + p2); // Ej: \"lopez mateos\"\n        }\n    }\n\n    return calles;\n}\n\n// ===============================\n// 3. DATOS DE ENTRADA\n// ===============================\nconst steps = items[0].json.steps || [];\nconst rss = limpiar(items[0].json.rss_content || \"\");\n\n// ===============================\n// 4. CALLES DE LA RUTA\n// ===============================\nlet callesRuta = new Set();\n\nsteps.forEach(step => {\n    let texto = step.html_instructions || \"\";\n    texto = texto.replace(/<[^>]*>?/gm, '');\n    texto = limpiar(texto);\n\n    let calles = extraerCalles(texto);\n    calles.forEach(c => callesRuta.add(c));\n});\n\n// ===============================\n// 5. CALLES DEL RSS\n// ===============================\nlet callesRSS = new Set(extraerCalles(rss));\n\n// ===============================\n// 6. INTERSECCIÓN REAL\n// ===============================\nlet coincidencias = [];\n\ncallesRuta.forEach(calle => {\n    if (callesRSS.has(calle)) {\n        coincidencias.push(calle.toUpperCase());\n    }\n});\n\n// ===============================\n// 7. CLASIFICACIÓN INTELIGENTE\n// ===============================\nlet impacto = \"NULO\";\nlet tipoImpacto = \"SIN AFECTACIÓN\";\nlet veredicto = \"\";\n\nif (coincidencias.length >= 2) {\n    impacto = \"ALTO\";\n    tipoImpacto = \"AFECTA DIRECTAMENTE LA RUTA\";\n    veredicto = `⚠️ Impacto directo en: ${coincidencias.join(\", \")}. Habrá retrasos.`;\n\n} else if (coincidencias.length === 1) {\n    impacto = \"MODERADO\";\n    tipoImpacto = \"CERCANO A LA RUTA\";\n    veredicto = `⚠️ Tráfico cercano en ${coincidencias[0]}. Posibles demoras.`;\n\n} else {\n    impacto = \"NULO\";\n    tipoImpacto = \"SIN AFECTACIÓN\";\n    veredicto = \"✅ Ruta libre. Incidentes no afectan tu trayecto.\";\n}\n\n// ===============================\n// 8. OUTPUT FINAL\n// ===============================\nreturn [{\n    impacto,\n    tipoImpacto,\n    coincidencias,\n    totalCoincidencias: coincidencias.length,\n    veredictoPersonalizado: veredicto\n}];"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        112,
+        288
+      ],
+      "id": "fcf7e83e-67f9-419d-8678-2f65e11aef6a",
+      "name": "Analizador_vial"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}_{{ $('Telegram Trigger').item.json.message.message_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        288
+      ],
+      "id": "2fa533a8-4149-4b76-8fd5-6cb8fe71dbc9",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "url": "https://guadalajara.publicbikesystem.net/ube/gbfs/v1/es/station_information.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        496,
+        288
+      ],
+      "id": "0acc142f-8bac-45d6-a366-2f428363a208",
+      "name": "Info_MiBici",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "311b2991-4d19-4f11-a601-8c8b2c63823e",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        432,
+        16
+      ],
+      "id": "0ec9373c-c7e1-4ac1-b821-3aa123a7745a",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"] }}",
+        "text": "🚨 GuardianZMG MODO DE RECUPERACIÓN  Hola, soy el asistente de movilidad. Hemos detectado un problema técnico con uno de nuestros proveedores de datos (Maps/MiBici).  🛠 Estado Intentando recuperación automática. 📋 Detalle El servicio se encuentra saturado o fuera de línea momentáneamente.  No te preocupes, estoy trabajando para restaurar tu ruta. Por favor, intenta de nuevo en un minuto.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        704,
+        80
+      ],
+      "id": "f76b1374-4454-4346-9d63-f6104a1369d6",
+      "name": "Send a text message2",
+      "webhookId": "cbcf0229-e9ef-4b7a-ad7f-c839beb43003",
+      "credentials": {
+        "telegramApi": {
+          "id": "zZ2fGRpROAe1IA78",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "obtener_clima": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "calculadora_tarifas": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TraficoZMG": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MiBici": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analizador_vial": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info_MiBici": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ae18564c-e782-4bf0-9a7d-5111ecabd7bd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "62c7ad5f84cce2ad9d06e3937bfb04386ec6c3a0c15a252e83c857413127d39a"
+  },
+  "id": "iZTHoZReFOgL94ei",
+  "tags": []
+}

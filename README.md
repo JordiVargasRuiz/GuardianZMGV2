@@ -104,6 +104,7 @@ Envía un mensaje de ejemplo en Telegram, por ejemplo:
 - `De Miramar al CUCEI`
 - `Ruta desde Plaza del Sol hacia Glorieta Minerva`
 <img width="1919" height="912" alt="image" src="https://github.com/user-attachments/assets/fe67fc8c-fd08-4f7b-a497-aa5a240e8d40" />
+![Video de demostración](GuardianZMG.mp4)
 
 
 El flujo generará una respuesta con:
